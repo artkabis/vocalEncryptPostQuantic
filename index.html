@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Générateur de Clés Post-Quantiques Audio</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Mono&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header>
+    <h1>Générateur de Clés Post-Quantiques Audio</h1>
+    <p class="tagline">Générez des clés cryptographiques résistantes aux attaques quantiques à partir d'entrées audio</p>
+  </header>
+
+  <main>
+    <section id="entropy-collection" class="panel">
+      <h2>Collection d'Entropie</h2>
+      <div class="status-bar">
+        <div id="status-message">Prêt à collecter de l'entropie</div>
+        <div class="entropy-meter-container">
+          <label for="entropy-meter">Entropie:</label>
+          <progress id="entropy-meter" max="256" value="0"></progress>
+          <span id="entropy-value">0 bits</span>
+        </div>
+      </div>
+      
+      <div class="audio-controls">
+        <button id="startRecording" class="primary-btn">Démarrer l'enregistrement</button>
+        <button id="stopRecording" class="secondary-btn" disabled>Arrêter l'enregistrement</button>
+      </div>
+      
+      <div class="visualizer-container">
+        <div class="visualizer-panel">
+          <h3>Forme d'onde</h3>
+          <canvas id="waveform-canvas" width="500" height="150"></canvas>
+        </div>
+        <div class="visualizer-panel">
+          <h3>Spectrogramme</h3>
+          <canvas id="spectrogram-canvas" width="500" height="150"></canvas>
+        </div>
+      </div>
+      
+      <div class="entropy-sources">
+        <h3>Sources d'entropie actives</h3>
+        <ul id="entropy-sources-list">
+          <li class="source-item" id="source-audio">
+            <span class="source-icon">🎤</span>
+            <span class="source-name">Audio</span>
+            <span class="source-status">En attente</span>
+          </li>
+          <li class="source-item" id="source-mouse">
+            <span class="source-icon">🖱️</span>
+            <span class="source-name">Mouvement de souris</span>
+            <span class="source-status">En attente</span>
+          </li>
+          <li class="source-item" id="source-timing">
+            <span class="source-icon">⏱️</span>
+            <span class="source-name">Jitter CPU</span>
+            <span class="source-status">En attente</span>
+          </li>
+          <li class="source-item" id="source-network">
+            <span class="source-icon">🌐</span>
+            <span class="source-name">Jitter réseau</span>
+            <span class="source-status">En attente</span>
+          </li>
+          <li class="source-item" id="source-sensors">
+            <span class="source-icon">📱</span>
+            <span class="source-name">Capteurs de mouvement</span>
+            <span class="source-status">Non disponible</span>
+          </li>
+          <li class="source-item" id="source-system">
+            <span class="source-icon">💻</span>
+            <span class="source-name">Métadonnées système</span>
+            <span class="source-status">En attente</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="key-generation" class="panel">
+      <h2>Génération de Clés</h2>
+      <div class="key-controls">
+        <button id="generateKey" class="primary-btn" disabled>Générer une paire de clés</button>
+        <button id="exportKeys" class="secondary-btn" disabled>Exporter les clés</button>
+      </div>
+      
+      <div class="key-type-selector">
+        <label for="key-algorithm">Algorithme:</label>
+        <select id="key-algorithm">
+          <option value="dilithium" selected>CRYSTALS-Dilithium (Standard NIST)</option>
+          <option value="kyber" disabled>CRYSTALS-Kyber (Échange de clés)</option>
+          <option value="falcon" disabled>FALCON (Signature)</option>
+        </select>
+      </div>
+      
+      <div class="key-info">
+        <div class="key-strength">
+          <h3>Force estimée:</h3>
+          <div class="strength-meter">
+            <div class="strength-label">Résistance post-quantique</div>
+            <div class="strength-bar quantum-resistant"></div>
+          </div>
+          <div class="strength-meter">
+            <div class="strength-label">Résistance classique</div>
+            <div class="strength-bar classical-resistant"></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="key-display">
+        <div class="key-box">
+          <h3>Clé publique</h3>
+          <pre id="public-key" class="key-content">Aucune clé générée</pre>
+          <button class="copy-btn" data-target="public-key">Copier</button>
+        </div>
+        
+        <div class="key-box">
+          <h3>Clé privée</h3>
+          <pre id="private-key" class="key-content">Aucune clé générée</pre>
+          <button class="copy-btn" data-target="private-key">Copier</button>
+          <div class="warning">Ne partagez jamais votre clé privée!</div>
+        </div>
+      </div>
+    </section>
+    
+    <section id="info-panel" class="panel">
+      <h2>À propos de la cryptographie post-quantique</h2>
+      <div class="info-content">
+        <p>La cryptographie post-quantique (PQC) désigne les algorithmes cryptographiques conçus pour résister aux attaques utilisant des ordinateurs quantiques.</p>
+        <p>Les ordinateurs quantiques peuvent facilement casser de nombreux systèmes cryptographiques actuellement utilisés, comme RSA et ECC, grâce à l'algorithme de Shor.</p>
+        <p>L'algorithme CRYSTALS-Dilithium est l'un des standards choisis par le NIST pour les signatures numériques résistantes aux attaques quantiques.</p>
+        
+        <h3>Pourquoi l'audio comme source d'entropie?</h3>
+        <p>L'audio ambient capté par un microphone contient de nombreuses sources d'aléatoire naturel:</p>
+        <ul>
+          <li>Bruit thermique des composants électroniques</li>
+          <li>Variations atmosphériques et acoustiques</li>
+          <li>Micro-fluctuations uniques à votre environnement</li>
+        </ul>
+        <p>En combinant ces sources avec d'autres sources d'entropie (mouvements de souris, jitter CPU et réseau), nous pouvons générer des clés cryptographiques d'une grande imprévisibilité.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 - Générateur de Clés Post-Quantiques Audio</p>
+    <p>Cette application fonctionne entièrement côté client - aucune donnée n'est transmise à un serveur.</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="visualizers.js"></script>
+  <script src="dilithium.js"></script>
+  <script src="application.js"></script>
+</body>
+</html>
