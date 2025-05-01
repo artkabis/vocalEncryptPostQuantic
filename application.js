@@ -296,6 +296,19 @@ const AppModules = {
           return this;
         }
       },
+      calculateRMSFromSamples(samples) {
+        if (!samples || samples.length === 0) return 0;
+        let sum = 0;
+        for (let i = 0; i < samples.length; i++) {
+            sum += samples[i] * samples[i];
+        }
+        return Math.sqrt(sum / samples.length);
+    },
+
+    calculateRMS(audioBuffer) { // Gardez l'original si utilisé ailleurs
+        const channelData = audioBuffer.getChannelData(0);
+        return this.calculateRMSFromSamples(channelData); // Réutiliser le helper
+    },
       
       async requestMicrophoneAccess() {
         try {
@@ -668,31 +681,34 @@ const AppModules = {
       calculateMFCC(audioBuffer) {
         // Simulation simplifiée des coefficients MFCC
         // En pratique, utiliser une bibliothèque comme meyda.js pour les MFCCs
-        
+
         const channelData = audioBuffer.getChannelData(0);
         const fftSize = 2048;
         const numCoefficients = 13; // Nombre standard de coefficients MFCC
         const mfccs = [];
-        
+
         // Traiter les trames audio
         for (let i = 0; i < channelData.length; i += fftSize / 2) {
-          const slice = channelData.slice(i, i + fftSize);
-          if (slice.length < fftSize) break;
-          
-          // Simuler des coefficients MFCC pour cette trame
-          const frameCoeffs = Array(numCoefficients);
-          for (let j = 0; j < numCoefficients; j++) {
-            // Pour la simulation, utiliser la valeur RMS comme base
-            const rms = this.calculateRMS(new Float32Array(slice));
-            // Introduire de la variance pour chaque coefficient
-            frameCoeffs[j] = rms * Math.sin(j * Math.PI / (numCoefficients - 1)) + (Math.random() * 0.1 - 0.05);
-          }
-          
-          mfccs.push(frameCoeffs);
+            const slice = channelData.slice(i, i + fftSize);
+            if (slice.length < fftSize) break;
+
+            // Simuler des coefficients MFCC pour cette trame
+            const frameCoeffs = Array(numCoefficients);
+            for (let j = 0; j < numCoefficients; j++) {
+                // **** CORRECTION ICI ****
+                // Utiliser la nouvelle fonction helper directement sur la 'slice'
+                const rms = this.calculateRMSFromSamples(slice);
+                // ***********************
+
+                // Introduire de la variance pour chaque coefficient
+                frameCoeffs[j] = rms * Math.sin(j * Math.PI / (numCoefficients - 1)) + (Math.random() * 0.1 - 0.05);
+            }
+
+            mfccs.push(frameCoeffs);
         }
-        
+
         return mfccs;
-      },
+    },
       
       calculatePerceptualFingerprint(audioBuffer) {
         // Simulation d'une empreinte digitale perceptuelle (style Chromaprint/Acoustid)
